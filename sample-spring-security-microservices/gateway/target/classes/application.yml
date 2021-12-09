@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
+        - id: callme-service
+          uri: http://127.0.0.1:7074
+          predicates:
+            - Path=/callme/**
+          filters:
+            - RemoveRequestHeader=Cookie
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            token-uri: http://localhost:8080/auth/realms/master/protocol/openid-connect/token
+            authorization-uri: http://localhost:8080/auth/realms/master/protocol/openid-connect/auth
+            userinfo-uri: http://localhost:8080/auth/realms/master/protocol/openid-connect/userinfo
+            user-name-attribute: preferred_username
+        registration:
+          keycloak-with-test-scope:
+            provider: keycloak
+            client-id: spring-with-test-scope
+            client-secret: 450487d4-f42c-484a-89dc-7ba86d4678b5
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+          keycloak-without-test-scope:
+            provider: keycloak
+            client-id: spring-without-test-scope
+            client-secret: 62d4c610-9133-460b-954f-73c15e62b78a
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+
+server.port: 7060
+
+logging.level:
+  org.springframework.cloud.gateway: DEBUG
+  org.springframework.security: DEBUG
+  org.springframework.web.reactive.function.client: TRACE
