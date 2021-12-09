@@ -1,0 +1,26 @@
+#!groovy
+pipeline{
+ agent any
+ 
+  tools {
+    maven 'maven'
+  }
+ 
+ stages{
+ 
+   stage("build"){
+   
+       steps{
+       
+          bat "mvn -f ./inventoryapidocker clean install -DskipTests"
+          bat "cd inventoryapidocker  & docker-compose up -d"
+                                   
+       }
+   
+   }
+ 
+ }
+ 
+ 
+ 
+}
